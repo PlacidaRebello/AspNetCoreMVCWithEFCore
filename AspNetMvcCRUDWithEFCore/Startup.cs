@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetMvcCRUDWithEFCore.DataAccess;
 using AspNetMvcCRUDWithEFCore.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,6 +28,8 @@ namespace AspNetMvcCRUDWithEFCore
         {
             services.AddDbContext<DataContext>(item
                   => item.UseSqlServer(Configuration.GetConnectionString("MyConn")));
+
+            services.AddTransient<IEmployeeDataAccess, EmployeeDataAccess>();
             //services.AddControllers();
             services.AddControllersWithViews();
         }

@@ -2,27 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetMvcCRUDWithEFCore.DataAccess;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AspNetMvcCRUDWithEFCore.Models;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace AspNetMvcCRUDWithEFCore.Controllers
 {
     public class EmployeeController : Controller
     {
         private readonly DataContext _context;
+        private readonly IEmployeeDataAccess _employeeData;
 
-        public EmployeeController(DataContext context)
+        public EmployeeController(DataContext context, IEmployeeDataAccess employeeData)
         {
             _context = context;
+            _employeeData = employeeData;
         }
 
         // GET: Employee
         public async Task<IActionResult> Index()
         {
-            var dataContext = _context.Employee.Include(e => e.City);
-            return View(await dataContext.ToListAsync());
+            return View(await _employeeData.GetCities().ToListAsync());
         }
 
         // GET: Employee/Details/5
@@ -33,9 +36,7 @@ namespace AspNetMvcCRUDWithEFCore.Controllers
                 return NotFound();
             }
 
-            var employee = await _context.Employee
-                .Include(e => e.City)
-                .FirstOrDefaultAsync(m => m.EmployeeID == id);
+            var employee = await _employeeData.GetEmployeeDetails((int)id);
             if (employee == null)
             {
                 return NotFound();
